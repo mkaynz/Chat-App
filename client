@@ -1,0 +1,62 @@
+import socket 
+import select 
+import sys
+
+HEADER_LENGTH = 20
+
+Port = 12345
+IP = "127.0.0.1"
+
+client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+ 
+ 
+client_socket.connect((IP, Port)) 
+
+
+
+message =""
+username= input("Welcome to the chat!\nPlease enter your name: ")
+
+
+def Print(read,current_number):
+	
+	message = client_socket.recv(HEADER_LENGTH)
+	
+	if message:
+		if message.decode()!=" ": 
+
+			print("\t\t"+message.decode())
+
+	return Send(read,current_number+1)
+	
+
+def Send(read,current_number):
+	if current_number ==client_socket:
+		message =current_number.recv(HEADER_LENGTH)
+		
+	else:
+		message =input(username+": ")
+		if message == ".exit":
+			sys.exit("Exiting...")
+
+		message =username+": "+message
+		client_socket.send(message.encode())
+
+	
+
+	return Print(read,current_number)
+
+
+while True: 
+
+
+	sockets_list = [client_socket] 
+
+	
+
+	read_sockets = select.select(sockets_list,[],[])
+	write_socket= select.select(sockets_list,[],[])
+	error_socket = select.select(sockets_list,[],[])
+
+	Send(read_sockets,0)
